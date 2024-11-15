@@ -1,11 +1,7 @@
 import datetime
-
 import pg8000.native
 from faker.proxy import Faker
-
-from generators import Gen
 import random
-import faker
 
 con = pg8000.native.Connection("postgres", password="123123")
 
@@ -24,7 +20,7 @@ for _ in range(10 ** 3):
     con.run(
         f"INSERT INTO yandex_eats_ph.address (city, street, house, entrance) VALUES ('{gen.city()}',  '{gen.address().replace('\n', ' ')}','{gen.numerify('%%')}', {gen.numerify('%%')})")
     con.run(
-        f"INSERT INTO yandex_eats_ph.courier (name, rating, transport, is_busy) VALUES ('{gen.name()}',  {float(gen.numerify('#.##')) % 5},'{random.choice(transport)}', {random.choice([True, False])})")
+        f"INSERT INTO yandex_eats_ph.courier (name, rating, transport, is_busy) VALUES ('{gen.name()}',  {int(float(gen.numerify('#.##')) % 5 * 100) / 100},'{random.choice(transport)}', {random.choice([True, False])})")
 
 # Fill relations
 
