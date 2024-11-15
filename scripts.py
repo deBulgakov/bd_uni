@@ -8,15 +8,16 @@ DROP TYPE IF EXISTS vehicle cascade;
 DROP TYPE IF EXISTS cfp cascade;
 DROP domain IF EXISTS rating cascade;
 
-CREATE TYPE yandex_eats_ph.vehicle as enum ('onfoot', 'bicycle', 'car');
+CREATE TYPE yandex_eats_ph.vehicle as enum ('On_foot', 'Bicycle', 'Car', 'Helicopter');
 CREATE type yandex_eats_ph.cfp as (carbs real, fats real, proteins real);
 CREATE domain yandex_eats_ph.rating as real check(0 <= value and value <= 5);
 
 create table if not exists yandex_eats_ph.person(           -----
 	person_id serial not null primary key,
-	phone_number text,
+	phone_number bigint,
 	login text,
-	full_name text
+	full_name text,
+	password text,
 );
 create table if not exists yandex_eats_ph.courier(
 	courier_id serial not null primary key,
@@ -43,7 +44,7 @@ create table if not exists yandex_eats_ph.provider(           -----
 	name text,
 	price_range int,
 	rating yandex_eats_ph.rating,
-	contacts int
+	contacts bigint
 );
 
 create table if not exists yandex_eats_ph.provider_prov_address(
