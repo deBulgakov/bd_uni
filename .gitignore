@@ -8,6 +8,7 @@
 /dataSources.local.xml
 *.xml
 *.txt
+datasets/*.txt
 !script.sql
 1.py
 test.py
