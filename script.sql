@@ -10,96 +10,113 @@ DROP domain IF EXISTS rating cascade;
 
 CREATE TYPE yandex_eats_ph.vehicle as enum ('On_foot', 'Bicycle', 'Car', 'Helicopter');
 CREATE TYPE yandex_eats_ph.gender as enum ('Male', 'Female', 'Gachi_Boss', 'Dungeon_master','AH-64 Apache', 'Ryba', 'Toyota');
-CREATE type yandex_eats_ph.cfp as (carbs real, fats real, proteins real);
-CREATE domain yandex_eats_ph.rating as real check(0 <= value and value <= 5);
+CREATE type yandex_eats_ph.cfp as
+(
+    carbs    real,
+    fats     real,
+    proteins real
+);
+CREATE domain yandex_eats_ph.rating as real check (0 <= value and value <= 5);
 
-create table if not exists yandex_eats_ph.person(           -----
-	person_id serial not null primary key,
-	phone_number bigint,
-	login text,
-	full_name text,
-	password text
+create table if not exists yandex_eats_ph.person
+( -----
+    person_id    serial not null primary key,
+    phone_number bigint,
+    login        text,
+    full_name    text,
+    password     text
 );
-create table if not exists yandex_eats_ph.courier(
-	courier_id serial not null primary key,
-	name text,
-	rating real,
-	transport yandex_eats_ph.vehicle,
-	is_busy boolean,
-    gender yandex_eats_ph.gender
+create table if not exists yandex_eats_ph.courier
+(
+    courier_id serial not null primary key,
+    name       text,
+    rating     real,
+    transport  yandex_eats_ph.vehicle,
+    is_busy    boolean,
+    gender     yandex_eats_ph.gender
 );
-create table if not exists yandex_eats_ph.address(
-	address_id serial not null primary key,
-	city text,
-	street text,
-	house text,
-	entrance int
+create table if not exists yandex_eats_ph.address
+(
+    address_id serial not null primary key,
+    city       text,
+    street     text,
+    house      text,
+    entrance   int
 );
-create table if not exists yandex_eats_ph.prov_address(
-	prov_address_id serial not null primary key,
-	city text,
-	street text,
-	is_available boolean
+create table if not exists yandex_eats_ph.prov_address
+(
+    prov_address_id serial not null primary key,
+    city            text,
+    street          text,
+    is_available    boolean
 );
-create table if not exists yandex_eats_ph.provider(           -----
-	provider_id serial not null primary key,
-	name text,
-	price_range int,
-	rating yandex_eats_ph.rating,
-	contacts bigint
-);
-
-create table if not exists yandex_eats_ph.provider_prov_address(
-	provider_id int not null references yandex_eats_ph.provider (provider_id),
-	prov_address_id int not null references yandex_eats_ph.prov_address (prov_address_id),
-	primary key (provider_id, prov_address_id)
-);
-
-create table if not exists yandex_eats_ph."order"(           -----
-	order_id serial not null primary key,
-	person_id int not null references yandex_eats_ph.person (person_id),
-	provider_id int not null references yandex_eats_ph.provider (provider_id),
-	courier_id int not null references yandex_eats_ph.courier (courier_id),
-	data text,
-	datetime_start timestamp,
-	datetime_expected timestamp,
-	datetime_end timestamp,
-	price money
-);
-create table if not exists yandex_eats_ph.dishes(           -----
-	dish_id serial not null primary key,
-	provider_id int not null references yandex_eats_ph.provider (provider_id),
-	nutrients_cfp yandex_eats_ph.cfp,
-	portion_size int,
-	contains text,
-	is_vegan boolean
-);
-create table if not exists yandex_eats_ph.change_address(
-	person_id int not null references yandex_eats_ph.person (person_id),
-	address_id int not null references yandex_eats_ph.address (address_id),
-	primary key (person_id, address_id)
-);
-create table if not exists yandex_eats_ph.order_dishes(
-	order_id int not null references yandex_eats_ph."order" (order_id),
-	dish_id int not null references yandex_eats_ph.dishes (dish_id),
-	primary key (order_id, dish_id)
+create table if not exists yandex_eats_ph.provider
+( -----
+    provider_id serial not null primary key,
+    name        text,
+    price_range int,
+    rating      yandex_eats_ph.rating,
+    contacts    bigint
 );
 
-
-create table if not exists yandex_eats_ph.account(           -----
-	person_id int not null references yandex_eats_ph.person(person_id),
-	points int,
-	promos text,
-	money_sum money,
-	payment_id serial,
-	primary key(payment_id)
+create table if not exists yandex_eats_ph.provider_prov_address
+(
+    provider_id     int not null references yandex_eats_ph.provider (provider_id),
+    prov_address_id int not null references yandex_eats_ph.prov_address (prov_address_id),
+    primary key (provider_id, prov_address_id)
 );
 
-create table if not exists yandex_eats_ph.payment_info(
-	payment_id int not null references yandex_eats_ph.account(payment_id),
-	card_number int not null,
-	cvc int not null,
-	exp_date date not null,
-	owner text,
-	bank text
+create table if not exists yandex_eats_ph."order"
+( -----
+    order_id          serial not null primary key,
+    person_id         int    not null references yandex_eats_ph.person (person_id),
+    provider_id       int    not null references yandex_eats_ph.provider (provider_id),
+    courier_id        int    not null references yandex_eats_ph.courier (courier_id),
+    data              text,
+    datetime_start    timestamp,
+    datetime_expected timestamp,
+    datetime_end      timestamp,
+    price             money
+);
+create table if not exists yandex_eats_ph.dishes
+( -----
+    dish_id       serial not null primary key,
+    provider_id   int    not null references yandex_eats_ph.provider (provider_id),
+    nutrients_cfp yandex_eats_ph.cfp,
+    portion_size  int,
+    contains      text,
+    is_vegan      boolean
+);
+create table if not exists yandex_eats_ph.change_address
+(
+    person_id  int not null references yandex_eats_ph.person (person_id),
+    address_id int not null references yandex_eats_ph.address (address_id),
+    primary key (person_id, address_id)
+);
+create table if not exists yandex_eats_ph.order_dishes
+(
+    order_id int not null references yandex_eats_ph."order" (order_id),
+    dish_id  int not null references yandex_eats_ph.dishes (dish_id),
+    primary key (order_id, dish_id)
+);
+
+
+create table if not exists yandex_eats_ph.account
+( -----
+    person_id  int not null references yandex_eats_ph.person (person_id),
+    points     int,
+    promos     text,
+    money_sum  money,
+    payment_id serial,
+    primary key (payment_id)
+);
+
+create table if not exists yandex_eats_ph.payment_info
+(
+    payment_id  int  not null references yandex_eats_ph.account (payment_id),
+    card_number int  not null,
+    cvc         int  not null,
+    exp_date    date not null,
+    owner       text,
+    bank        text
 );
