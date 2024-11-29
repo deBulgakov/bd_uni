@@ -9,6 +9,7 @@ DROP TYPE IF EXISTS cfp cascade;
 DROP domain IF EXISTS rating cascade;
 
 CREATE TYPE yandex_eats_ph.vehicle as enum ('On_foot', 'Bicycle', 'Car', 'Helicopter');
+CREATE TYPE yandex_eats_ph.gender as enum ('Male', 'Female', 'Gachi_Boss', 'Dungeon_master','AH-64 Apache', 'Ryba', 'Toyota');
 CREATE type yandex_eats_ph.cfp as (carbs real, fats real, proteins real);
 CREATE domain yandex_eats_ph.rating as real check(0 <= value and value <= 5);
 
@@ -17,14 +18,15 @@ create table if not exists yandex_eats_ph.person(           -----
 	phone_number bigint,
 	login text,
 	full_name text,
-	password text,
+	password text
 );
 create table if not exists yandex_eats_ph.courier(
 	courier_id serial not null primary key,
 	name text,
 	rating real,
 	transport yandex_eats_ph.vehicle,
-	is_busy boolean
+	is_busy boolean,
+    gender yandex_eats_ph.gender
 );
 create table if not exists yandex_eats_ph.address(
 	address_id serial not null primary key,
@@ -59,14 +61,15 @@ create table if not exists yandex_eats_ph."order"(           -----
 	provider_id int not null references yandex_eats_ph.provider (provider_id),
 	courier_id int not null references yandex_eats_ph.courier (courier_id),
 	data text,
-	eta time,
-	price money,
-	status boolean
+	datetime_start timestamp,
+	datetime_expected timestamp,
+	datetime_end timestamp,
+	price money
 );
 create table if not exists yandex_eats_ph.dishes(           -----
 	dish_id serial not null primary key,
 	provider_id int not null references yandex_eats_ph.provider (provider_id),
-	nutrients yandex_eats_ph.cfp,
+	nutrients_cfp yandex_eats_ph.cfp,
 	portion_size int,
 	contains text,
 	is_vegan boolean

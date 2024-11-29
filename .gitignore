@@ -8,7 +8,7 @@
 /dataSources.local.xml
 *.xml
 *.txt
-!scripts.txt
+!script.sql
 1.py
 test.py
 .idea/
