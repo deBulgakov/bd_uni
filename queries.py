@@ -221,8 +221,9 @@ WHERE
 ORDER BY 
     dp.order_count DESC;
 ''')
-        case 15:
-            return con.run(f"")
+        case _:
+            exit('Надо тренироваться...')
+
 
 
 connection = pg8000.native.Connection("postgres", password="123123")
